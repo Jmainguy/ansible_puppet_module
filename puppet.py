@@ -140,22 +140,16 @@ def main():
         module.fail_json(msg="value of state must be one of: enabled, disabled, run, got: %s" % state)
     elif state is 'disabled':
         state = 'disable'
-        rc, stdout, stderr = puppet.puppet_status(module, state)
-        module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
     elif state is 'enabled':
         state = 'enable'
+
+    if packagediff is True and state == 'run':
+        prelist = rpmdata.rpm()
         rc, stdout, stderr = puppet.puppet_status(module, state)
-        module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
-    elif state is 'run':
-        if packagediff is True:
-            prelist = rpmdata.rpm()
-            rc, stdout, stderr = puppet.puppet_status(module, state)
-            postlist = rpmdata.rpm()
-            rpmdiff = difflib.unified_diff(prelist, postlist, n=0, lineterm="")
-            rpmdiff = rpmdata.formatdiff(rpmdiff)
-            stdout = stdout + rpmdiff
-        else:
-            rc, stdout, stderr = puppet.puppet_status(module, state)
+        postlist = rpmdata.rpm()
+        rpmdiff = difflib.unified_diff(prelist, postlist, n=0, lineterm="")
+        rpmdiff = rpmdata.formatdiff(rpmdiff)
+        stdout = stdout + rpmdiff
     else:
         rc, stdout, stderr = puppet.puppet_status(module, state)
         module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
@@ -163,6 +157,8 @@ def main():
     # 2 means stuff changed, 4 means errors, 6 means stuff changed and errors
     if rc != 2:
         module.fail_json(msg='Puppet encountered errors. %s %s' % (stdout, stderr) )
+    else:
+        rc = 0
 
     # If you got this far, then stuff worked
     module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
