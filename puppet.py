@@ -86,6 +86,9 @@ class Puppet(object):
             # Remove pointless lines nobody cares about
             stdout = re.sub('(?i)Info:.*\n', '', stdout)
             stdout = re.sub('(?i)Notice: Ignoring --listen on onetime run\n', '', stdout)
+            # Filter out passwords
+            stdout = re.sub('.*default_db.*', '************Password filtered out************', stdout)
+            stdout = re.sub('.*password.*', '************Password filtered out************', stdout)
             # In puppet, 2 means changed, 4 means errors, 6 means changed and errors
         else:
             cmd = "puppet agent --%s" % state
