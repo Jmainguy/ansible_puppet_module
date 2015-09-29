@@ -159,7 +159,8 @@ def main():
 
     # 2 means stuff changed, 4 means errors, 6 means stuff changed and errors
     if rc != 2:
-        module.fail_json(msg='Puppet encountered errors. %s %s' % (stdout, stderr), rc=rc, stdout=stdout, stderr=stderr )
+        #module.fail_json(msg='Puppet encountered errors. %s %s' % (stdout, stderr), rc=rc, stdout=stdout, stderr=stderr )
+        module.fail_json(msg='Puppet encountered errors\n', rc=rc, stdout=stdout, stderr=stderr )
     else:
         rc = 0
 
