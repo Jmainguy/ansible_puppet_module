@@ -114,13 +114,14 @@ class Rpmdatabase(object):
     def formatdiff(self, rpmdiff):
         text = ''
         seperator = '================================================================================\n'
-        diffheader = 'This is the RPM delta\n'
+        diffheader = 'This begins the RPM delta\n'
+        difffooter = 'The RPM delta is over, over I say.\n'
         # Only add lines begining with - or + immediately followed by a letter
         for line in rpmdiff:
             found = re.search("^[-|+][a-zA-Z].*", line)
             if found:
                 text += line + '\n'
-        rpmdiff = seperator + diffheader + text + seperator
+        rpmdiff = seperator + diffheader + seperator + text + seperator + difffooter + seperator
         return rpmdiff
     
 
@@ -157,10 +158,13 @@ def main():
         rc, stdout, stderr = puppet.puppet_status(module, state)
         module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
 
-    # 2 means stuff changed, 4 means errors, 6 means stuff changed and errors
+    # 0 means nothing changed, 2 means stuff changed, 4 means errors, 6 means stuff changed and errors
     if rc != 2:
         #module.fail_json(msg='Puppet encountered errors. %s %s' % (stdout, stderr), rc=rc, stdout=stdout, stderr=stderr )
-        module.fail_json(msg='Puppet encountered errors\n', rc=rc, stdout=stdout, stderr=stderr )
+        if rc == 0:
+          module.exit_json(changed=True, rc=rc, stdout=stdout, stderr=stderr)
+        else:
+          module.fail_json(msg='Puppet encountered errors\n', rc=rc, stdout=stdout, stderr=stderr )
     else:
         rc = 0
 
