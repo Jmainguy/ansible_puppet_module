@@ -146,6 +146,8 @@ def main():
         state = 'disable'
     elif state is 'enabled':
         state = 'enable'
+    elif state is 'noop':
+        state = 'test --noop'
 
     if packagediff is True and state == 'run':
         prelist = rpmdata.rpm()
