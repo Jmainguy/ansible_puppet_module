@@ -140,13 +140,13 @@ def main():
     rpmdiff = ''
 
 
-    if state not in ['run', 'enable', 'enabled', 'disable', 'disabled']:
+    if state not in ['run', 'enable', 'enabled', 'disable', 'disabled', 'noop']:
         module.fail_json(msg="value of state must be one of: enabled, disabled, run, got: %s" % state)
-    elif state is 'disabled':
+    elif state == 'disabled':
         state = 'disable'
-    elif state is 'enabled':
+    elif state == 'enabled':
         state = 'enable'
-    elif state is 'noop':
+    elif state == 'noop':
         state = 'test --noop'
 
     if packagediff is True and state == 'run':
